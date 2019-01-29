@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+project(mars-rover-task-solution LANGUAGES C CXX)
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 0)
+set(VERSION_PATCH 0)
+set(CMAKE_CXX_STANDARD 11)
+add_subdirectory(solution)
