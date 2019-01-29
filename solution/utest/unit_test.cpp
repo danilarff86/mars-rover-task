@@ -1,5 +1,10 @@
-#include "CommandCenter.h"
-#include "gtest/gtest.h"
+#include <CommandCenter.h>
+#include <MarsPlateau.h>
+#include <MarsRover.h>
+#include <gtest/gtest.h>
+
+#include <algorithm>
+#include <memory>
 
 using namespace mars_rover;
 
@@ -11,21 +16,97 @@ operator==( const MarsRoverState& lh, const MarsRoverState& rh )
     return lh.position.x == rh.position.x && lh.position.y == rh.position.y
            && lh.direction == rh.direction;
 }
+
+std::ostream&
+operator<<( std::ostream& os, const MarsRoverState& state )
+{
+    static const auto directions = "NESW";
+    os << directions[ static_cast< int >( state.direction ) ] << " " << state.position.x << " "
+       << state.position.y;
+    return os;
+}
 }  // namespace mars_rover
 
-class CommandCenterTest : public ::testing::Test
+class BaseTest : public ::testing::Test
 {
 protected:
     static const auto L = eCommand::TurnLeft;
     static const auto R = eCommand::TurnRight;
     static const auto M = eCommand::MoveForward;
-
-    // CommandCenter command_center;
 };
+
+class MarsPlateauTest : public BaseTest
+{
+protected:
+    void
+    SetUp( ) final
+    {
+        plateau = std::unique_ptr< MarsPlateau >( new MarsPlateau( {10, 10} ) );
+    }
+
+    std::unique_ptr< MarsPlateau > plateau;
+};
+
+class MarsRoverTest : public MarsPlateauTest
+{
+};
+
+class CommandCenterTest : public BaseTest
+{
+protected:
+    CommandCenter command_center;
+};
+
+TEST_F( MarsPlateauTest, test_possible_move )
+{
+    EXPECT_TRUE( plateau->is_possible_move( {5, 5} ) );
+    EXPECT_TRUE( plateau->is_possible_move( {0, 0} ) );
+    EXPECT_TRUE( plateau->is_possible_move( {10, 10} ) );
+}
+
+TEST_F( MarsPlateauTest, test_impossible_move )
+{
+    EXPECT_FALSE( plateau->is_possible_move( {-1, 0} ) );
+    EXPECT_FALSE( plateau->is_possible_move( {0, -1} ) );
+    EXPECT_FALSE( plateau->is_possible_move( {11, 0} ) );
+    EXPECT_FALSE( plateau->is_possible_move( {0, 11} ) );
+}
+
+TEST_F( MarsRoverTest, turn_360_degrees )
+{
+    MarsRoverState expected_state{eDirection::North, Coordinates{1, 2}};
+    MarsRover rover( *plateau, expected_state );
+
+    // Turn left four times
+    for ( const auto cmd : CommandCenterInput::CommandSequence{L, L, L, L} )
+    {
+        rover.do_action( cmd );
+    }
+    EXPECT_EQ( expected_state, rover.get_state( ) );
+
+    // Turn right four times
+    for ( const auto cmd : CommandCenterInput::CommandSequence{R, R, R, R} )
+    {
+        rover.do_action( cmd );
+    }
+
+    EXPECT_EQ( expected_state, rover.get_state( ) );
+}
+
+TEST_F( MarsRoverTest, move_to_invalid_position )
+{
+    MarsRoverState expected_state{eDirection::East, Coordinates{10, 10}};
+    MarsRover rover( *plateau, {eDirection::North, Coordinates{9, 9}} );
+
+    for ( const auto cmd : CommandCenterInput::CommandSequence{M, M, M, R, M, M, M} )
+    {
+        rover.do_action( cmd );
+    }
+    EXPECT_EQ( expected_state, rover.get_state( ) );
+}
 
 TEST_F( CommandCenterTest, basic_provided_input )
 {
-    CommandCenter command_center;
     Coordinates upper_left{5, 5};
     MarsRoverState rover1_state{eDirection::North, Coordinates{1, 2}};
     CommandCenterInput::CommandSequence rover1_sequence{L, M, L, M, L, M, L, M, M};
