@@ -37,3 +37,16 @@ MMRMMRMRRM
 1 3 N
 
 5 1 E
+
+---
+## Build instructions
+
+### Build all
+> mkdir build-mars-rover-task && cd build-mars-rover-task
+
+> cmake ../mars-rover-task
+
+> cmake --build .
+
+### Run functional tests
+> ./solution/utest/mars-rover-utest
