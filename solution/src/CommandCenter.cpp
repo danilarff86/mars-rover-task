@@ -1,5 +1,5 @@
 #include "CommandCenter.h"
-#include "MarsPlateau.h"
+#include "MarsPlateauImpl.h"
 #include "MarsRover.h"
 
 #include <algorithm>
@@ -9,7 +9,7 @@ namespace mars_rover
 CommandCenterOutput
 CommandCenter::process( const CommandCenterInput& input_data ) const
 {
-    const MarsPlateau plateau( input_data.upper_right_corner_of_plateau );
+    const MarsPlateauImpl plateau( input_data.upper_right_corner_of_plateau );
 
     CommandCenterOutput result;
     result.reserve( input_data.rovers_data.size( ) );

@@ -27,7 +27,8 @@ add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
 # dependencies automatically when using CMake 2.8.11 or
 # later. Otherwise we have to add them here ourselves.
 if (CMAKE_VERSION VERSION_LESS 2.8.11)
-  include_directories("${gtest_SOURCE_DIR}/include")
+    include_directories("${gtest_SOURCE_DIR}/include"
+                        "${gmock_SOURCE_DIR}/include")
 endif()
 
 file(GLOB UTEST_SOURCES
@@ -35,4 +36,4 @@ file(GLOB UTEST_SOURCES
 )
 
 add_executable(mars-rover-utest ${UTEST_SOURCES})
-target_link_libraries(mars-rover-utest gtest_main ${MAIN_LIB_NAME})
+target_link_libraries(mars-rover-utest gmock_main gtest_main ${MAIN_LIB_NAME})

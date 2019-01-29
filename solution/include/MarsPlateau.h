@@ -11,37 +11,21 @@ namespace mars_rover
  */
 
 /**
- * @brief Mars Plateau class definition
+ * @brief Mars Plateau interface definition
  *
- * Represents @ref MarsPlateau class which could be navigated by Mars Rovers.
+ * Represents @ref MarsPlateau which could be navigated by Mars Rovers.
  */
 class MarsPlateau
 {
 public:
-    /**
-     * @brief @ref MarsPlateau constructor which accepts upper right corner coordinates.
-     *
-     * @param upper_right_corner: coordinates of plateau' upper right corner
-     */
-    explicit MarsPlateau( Coordinates upper_right_corner )
-        : m_upper_right_corner( std::move( upper_right_corner ) )
-    {
-    }
+    virtual ~MarsPlateau( ) = default;
 
     /**
-     * @brief Check whenever supplied ccordinates are in plateau' bounding boxes.
+     * @brief Check whenever supplied coordinates are in plateau' bounding boxes.
      * @param coords: coordinates to be tested.
-     * @retval true if coordines inside bounding boxes, false otherwise
+     * @retval true if coordinates inside bounding boxes, false otherwise
      */
-    inline bool
-    is_possible_move( Coordinates coords ) const
-    {
-        return coords.x >= 0 && coords.y >= 0 && coords.x <= m_upper_right_corner.x
-               && coords.y <= m_upper_right_corner.y;
-    }
-
-private:
-    const Coordinates m_upper_right_corner; /*!< upper right corner of plateau' grid. */
+    virtual bool is_possible_move( const Coordinates& coords ) const = 0;
 };
 
 /** @}*/

@@ -1,6 +1,7 @@
 #include <CommandCenter.h>
-#include <MarsPlateau.h>
+#include <MarsPlateauImpl.h>
 #include <MarsRover.h>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <algorithm>
@@ -11,18 +12,29 @@ using namespace mars_rover;
 namespace mars_rover
 {
 bool
+operator==( const Coordinates& lh, const Coordinates& rh )
+{
+    return lh.x == rh.x && lh.y == rh.y;
+}
+
+bool
 operator==( const MarsRoverState& lh, const MarsRoverState& rh )
 {
-    return lh.position.x == rh.position.x && lh.position.y == rh.position.y
-           && lh.direction == rh.direction;
+    return lh.position == rh.position && lh.direction == rh.direction;
+}
+
+std::ostream&
+operator<<( std::ostream& os, const Coordinates& coords )
+{
+    os << "(" << coords.x << "," << coords.y << ")";
+    return os;
 }
 
 std::ostream&
 operator<<( std::ostream& os, const MarsRoverState& state )
 {
     static const auto directions = "NESW";
-    os << directions[ static_cast< int >( state.direction ) ] << " " << state.position.x << " "
-       << state.position.y;
+    os << directions[ static_cast< int >( state.direction ) ] << state.position;
     return os;
 }
 }  // namespace mars_rover
@@ -38,10 +50,17 @@ protected:
 class MarsPlateauTest : public BaseTest
 {
 protected:
+    class MockMarsPlateau : public MarsPlateau
+    {
+    public:
+        MOCK_CONST_METHOD1( is_possible_move, bool( const Coordinates& ) );
+        MOCK_CONST_METHOD1( is_ok, bool( const bool& ) );
+    };
+
     void
     SetUp( ) final
     {
-        plateau = std::unique_ptr< MarsPlateau >( new MarsPlateau( {10, 10} ) );
+        plateau = std::unique_ptr< MarsPlateau >( new MarsPlateauImpl( {10, 10} ) );
     }
 
     std::unique_ptr< MarsPlateau > plateau;
@@ -103,6 +122,21 @@ TEST_F( MarsRoverTest, move_to_invalid_position )
         rover.do_action( cmd );
     }
     EXPECT_EQ( expected_state, rover.get_state( ) );
+}
+
+TEST_F( MarsRoverTest, test_position_check_invocation )
+{
+    using ::testing::Return;
+
+    MockMarsPlateau mock_plateau;
+
+    EXPECT_CALL( mock_plateau, is_possible_move( Coordinates{7, 8} ) )
+        .Times( 1 )
+        .WillRepeatedly( Return( true ) );
+
+    MarsRover rover( mock_plateau, {eDirection::North, Coordinates{7, 7}} );
+
+    rover.do_action( M );
 }
 
 TEST_F( CommandCenterTest, basic_provided_input )
