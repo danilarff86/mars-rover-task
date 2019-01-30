@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2019 PE Lubenets. All rights reserved.
+ * Licensed under the MIT License.
+ */
+
 #include "MarsRover.h"
 #include "MarsPlateau.h"
 
