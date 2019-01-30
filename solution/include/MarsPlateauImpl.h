@@ -27,9 +27,7 @@ public:
     }
 
     /**
-     * @brief Check whenever supplied coordinates are in plateau' bounding boxes.
-     * @param coords: coordinates to be tested.
-     * @retval true if coordinates inside bounding boxes, false otherwise
+     * @brief Interface method implementation of @ref MarsPlateau
      */
     bool
     is_possible_move( const Coordinates& coords ) const override

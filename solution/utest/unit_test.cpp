@@ -78,13 +78,11 @@ protected:
 
 TEST_F( MarsPlateauTest, test_possible_move )
 {
+    SCOPED_TRACE( "Tests plateau' possible moves calculation" );
+
     EXPECT_TRUE( plateau->is_possible_move( {5, 5} ) );
     EXPECT_TRUE( plateau->is_possible_move( {0, 0} ) );
     EXPECT_TRUE( plateau->is_possible_move( {10, 10} ) );
-}
-
-TEST_F( MarsPlateauTest, test_impossible_move )
-{
     EXPECT_FALSE( plateau->is_possible_move( {-1, 0} ) );
     EXPECT_FALSE( plateau->is_possible_move( {0, -1} ) );
     EXPECT_FALSE( plateau->is_possible_move( {11, 0} ) );
@@ -93,6 +91,8 @@ TEST_F( MarsPlateauTest, test_impossible_move )
 
 TEST_F( MarsRoverTest, turn_360_degrees )
 {
+    SCOPED_TRACE( "Tests MarsRover' turns for 360 degrees" );
+
     MarsRoverState expected_state{eDirection::North, Coordinates{1, 2}};
     MarsRover rover( *plateau, expected_state );
 
@@ -114,6 +114,8 @@ TEST_F( MarsRoverTest, turn_360_degrees )
 
 TEST_F( MarsRoverTest, move_to_invalid_position )
 {
+    SCOPED_TRACE( "Tests moving MarsRover to invalid position" );
+
     MarsRoverState expected_state{eDirection::East, Coordinates{10, 10}};
     MarsRover rover( *plateau, {eDirection::North, Coordinates{9, 9}} );
 
@@ -126,6 +128,8 @@ TEST_F( MarsRoverTest, move_to_invalid_position )
 
 TEST_F( MarsRoverTest, test_position_check_invocation )
 {
+    SCOPED_TRACE( "Ensuring Plateau' possible position calculation was invoked" );
+
     using ::testing::Return;
 
     MockMarsPlateau mock_plateau;
@@ -141,6 +145,8 @@ TEST_F( MarsRoverTest, test_position_check_invocation )
 
 TEST_F( CommandCenterTest, basic_provided_input )
 {
+    SCOPED_TRACE( "Test overall solution with supplied data" );
+
     Coordinates upper_left{5, 5};
     MarsRoverState rover1_state{eDirection::North, Coordinates{1, 2}};
     CommandCenterInput::CommandSequence rover1_sequence{L, M, L, M, L, M, L, M, M};
